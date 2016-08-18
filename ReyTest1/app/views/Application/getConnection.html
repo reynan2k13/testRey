@@ -1,0 +1,17 @@
+#{extends 'main.html' /}
+#{set title:'Home' /}
+
+<div>
+    #{list users, as: 'userlist'}
+        <p>User ID : "${userlist?.id}"</p>
+        <p>User Full Nmae : "${userlist?.name}"</p>
+    #{/list}
+    <p>All Contacts</p>
+    #{list contact, as: 'contact'}
+        <p>firstName : "${contact?.firstName}"</p>
+        <p>lastName : "${contact?.lastName}"</p>
+        <p>title : "${contact?.title}"</p>
+        <p>companyName : "${contact?.companyName}"</p>
+    #{/list}
+
+</div>

@@ -1,0 +1,14 @@
+#{extends 'main.html' /}
+#{set title:'Home' /}
+
+<div>
+    #{form @Application.getConnection(), method:'POST', enctype:'multipart/form-data'}
+        <input type="text" name="yourURL" class="second_title" maxlength="255" value="https://kinpoelectronicsinc.highrisehq.com/" required/> login url
+        <br>
+        <input type="text" name="username" class="second_title" maxlength="255" value="reynan2k13" required/> username or email
+        <br>
+        <input type="text" name="password" class="second_title" maxlength="255" value="reynan2k135" required/> password
+        <br>
+        <input class="btn btn-hg btn-success btn-news-save" type="submit" value="SUBMIT">
+    #{/form}
+</div>
