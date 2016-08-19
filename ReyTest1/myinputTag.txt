@@ -11,7 +11,7 @@
     <last-name>Bautista</last-name>
     <owner-id type="integer" nil="true"></owner-id>
     <title>developer</title>
-    <updated-at type="datetime">2016-08-18T12:00:50Z</updated-at>
+    <updated-at type="datetime">2016-08-19T07:30:50Z</updated-at>
     <visible-to>Everyone</visible-to>
     <company-name>kinpo</company-name>
     <linkedin-url nil="true"></linkedin-url>
@@ -20,6 +20,10 @@
   <tag>
     <id type="integer">4864296</id>
     <name>developer</name>
+  </tag>
+  <tag>
+    <id type="integer">4865384</id>
+    <name>combobox</name>
   </tag>
 </tags>
 <contact-data>

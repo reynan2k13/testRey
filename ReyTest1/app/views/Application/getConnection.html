@@ -47,8 +47,13 @@
 
         #{/list}
 
-        #{form @Application.getData(), method:'POST', enctype:'multipart/form-data'}
-            <input class="btn btn-hg btn-success btn-news-save" type="submit" value="Get Data" id="submit">
-        #{/form}
+        <center>
+            #{form @Application.getData(), method:'POST', enctype:'multipart/form-data'}
+                <input type="text" name="yourURL" value="${yourURL}" style="width:300px;" hidden/>
+                <input type="text" name="token" value="${token}" style="width:300px;" hidden/>
+                <input type="text" name="password" value="${password}" style="width:300px;" hidden/>
+                <input class="btn btn-hg btn-success btn-news-save" type="submit" value="Get Data" id="submit">
+            #{/form}
+        </center>
     </div>
 </div>
