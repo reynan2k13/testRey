@@ -1,16 +1,22 @@
 #{extends 'main.html' /}
 #{set title:'Home' /}
+<script xmlns="http://www.w3.org/1999/html">
+$(document).ready(function(){
+    $("#submit").click(function(){
+        console.log("submit form");
+    });
+});
 
+</script>
 <div>
+    <center>
     #{form @Application.getConnection(), method:'POST', enctype:'multipart/form-data'}
-        <input type="text" name="yourURL" class="second_title" maxlength="255" value="https://kinpoelectronicsinc.highrisehq.com/" required/> login url
-        <br>
-        <input type="text" name="token" class="second_title" maxlength="255" value="b0bd437dc2765fea5e705cb6b8b32723" required/> ur token
-        <br>
-        <input type="text" name="password" class="second_title" maxlength="255" value="reynantest1" required/> password
-        <br>
-        <input type="text" name="tagName" class="second_title" maxlength="255" value="developer" required/> FindTag
-        <br>
-        <input class="btn btn-hg btn-success btn-news-save" type="submit" value="SUBMIT">
-    #{/form}
+        <p><input type="text" name="yourURL" value="https://kinpoelectronicsinc.highrisehq.com/" style="width:300px;" required/> login url</p>
+        <p><input type="text" name="token" value="b0bd437dc2765fea5e705cb6b8b32723" style="width:300px;" required/>Your token</p>
+        <p><input type="text" name="password" value="reynantest1" style="width:300px;" required/>password</p>
+        <p><input type="text" name="tagName" value="developer" style="width:300px;" required/> FindTag</p>
+        <input class="btn btn-hg btn-success btn-news-save" type="submit" value="SUBMIT" id="submit">
+        #{/form}
+    </center>
+
 </div>

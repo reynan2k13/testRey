@@ -2,11 +2,53 @@
 #{set title:'Home' /}
 
 <div>
-    <p>${content}</p>
-    #{list contacts, as: 'contactlist'}
-    <p>"${contactlist?.firstName}"</p>
-    <p>"${contactlist?.lastName}"</p>
-    <p>"${contactlist?.title}"</p>
-    <p>"${contactlist?.companyName}"</p>
-    #{/list}
+    <div class="row">
+        <br>
+        <br>
+        <div class="col-lg-2 col-md-2" >
+            <h3>User ID</h3>
+        </div>
+        <div class="col-lg-2 col-md-2" >
+            <h3>first Name</h3>
+        </div>
+        <div class="col-lg-2 col-md-2" >
+            <h3>Last Name</h3>
+        </div>
+        <div class="col-lg-2 col-md-2" >
+            <h3>Title</h3>
+        </div>
+        <div class="col-lg-2 col-md-2" >
+            <h3>Company</h3>
+        </div>
+        <div class="col-lg-2 col-md-2" >
+            <h3>Tag</h3>
+        </div>
+
+        <br>
+        #{list contacts, as: 'contactlist'}
+        <div class="col-lg-2 col-md-2">
+            <p>${contactlist?.userId}</p>
+        </div>
+        <div class="col-lg-2 col-md-2" >
+            <p>${contactlist?.firstName}</p>
+        </div>
+        <div class="col-lg-2 col-md-2">
+            <p>${contactlist?.lastName}</p>
+        </div>
+        <div class="col-lg-2 col-md-2">
+            <p>${contactlist?.title}</p>
+        </div>
+        <div class="col-lg-2 col-md-2">
+            <p>${contactlist?.companyName}</p>
+        </div>
+        <div class="col-lg-2 col-md-2">
+            <p>${contactlist?.tags}</p>
+        </div>
+
+        #{/list}
+
+        #{form @Application.getData(), method:'POST', enctype:'multipart/form-data'}
+            <input class="btn btn-hg btn-success btn-news-save" type="submit" value="Get Data" id="submit">
+        #{/form}
+    </div>
 </div>
