@@ -1,216 +1,162 @@
 package controllers;
 
 import models.Contact;
-import org.nobel.highriseapi.InvalidUserCredentialsException;
+import models.Tag;
 import org.w3c.dom.Document;
+import org.w3c.dom.NodeList;
+import play.libs.WS;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
-import org.xml.sax.SAXException;
-import play.libs.WS;
-import play.mvc.Controller;
-
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.xpath.XPath;
 import javax.xml.xpath.XPathConstants;
 import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
-
-public class Application extends Controller {
-
+public class Application extends WebService {
 
     public static void index() {
         render();
     }
+    public static void home(String endpoint, String token, String password) {
+        response.setCookie("endpoint", endpoint);
+        response.setCookie("token", token);
+        response.setCookie("password", password);
+        render();
+    }
 
-    public static void getConnection(String token, String password, String yourURL, String tagName) throws InvalidUserCredentialsException, ParserConfigurationException, IOException, SAXException, XPathExpressionException {
+    public static void getAllContact(String endpoint, String token, String password) throws XPathExpressionException {
 
-        WS.HttpResponse res = WS.url(yourURL + "people.xml").authenticate(token, password, WS.Scheme.BASIC).get();
-        String contentAll = res.getString();
+        if(request.cookies.containsKey("endpoint")){
+            if(request.cookies.get("endpoint").value.isEmpty()==false)
+                endpoint = request.cookies.get("endpoint").value;
+        }
+        if(request.cookies.containsKey("token")){
+            if(request.cookies.get("token").value.isEmpty()==false)
+                token = request.cookies.get("token").value;
+        }
+        if(request.cookies.containsKey("password")){
+            if(request.cookies.get("password").value.isEmpty()==false)
+                password = request.cookies.get("password").value;
+        }
 
-        FileWriter fileWritter = new FileWriter("myinput.txt");
-        BufferedWriter bufferWritter = new BufferedWriter(fileWritter);
-        bufferWritter.write(contentAll);
-        bufferWritter.close();
-
-        String contentAllTags = null;
-
-        File inputFile = new File("myinput.txt");
-        DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
-        DocumentBuilder dBuilder;
-        dBuilder = dbFactory.newDocumentBuilder();
-        Document doc = dBuilder.parse(inputFile);
-        doc.getDocumentElement().normalize();
-
+        WS.HttpResponse res = WS.url( endpoint + "people.xml").authenticate(token, password, WS.Scheme.BASIC).get();
+        Document doc  = res.getXml();
+        String sss = res.getString();
+        System.out.println(sss);
         XPath xPath = XPathFactory.newInstance().newXPath();
 
-        String expression = "/people/person/tags/tag";
+        String expression = "/people/person";
         NodeList nodeList = (NodeList) xPath.compile(expression).evaluate(doc, XPathConstants.NODESET);
-
         List<Contact> contacts = new ArrayList<>();
+
         for (int i = 0; i < nodeList.getLength(); i++) {
             Node nNode = nodeList.item(i);
             System.out.println("\nCurrent Element :" + nNode.getNodeName());
             if (nNode.getNodeType() == Node.ELEMENT_NODE) {
+                Contact contact = new Contact();
                 Element eElement = (Element) nNode;
+                System.out.println(eElement.getElementsByTagName("id").item(0).getTextContent());
+                System.out.println(eElement.getElementsByTagName("first-name").item(0).getTextContent());
+                contact.userID = eElement.getElementsByTagName("id").item(0).getTextContent();
+                contact.firstName =eElement.getElementsByTagName("first-name").item(0).getTextContent();
+                contact.lastName = eElement.getElementsByTagName("last-name").item(0).getTextContent();
+                contact.title = eElement.getElementsByTagName("title").item(0).getTextContent();
+                contact.companyName = eElement.getElementsByTagName("company-name").item(0).getTextContent();
+                contacts.add(contact);
 
-                System.out.println("id : " + eElement.getElementsByTagName("id").item(0).getTextContent());
-                System.out.println("tagsname : " + eElement.getElementsByTagName("name").item(0).getTextContent());
-
-
-                if (eElement.getElementsByTagName("name").item(0).getTextContent().equals(tagName)) {
-                    String tag_id = eElement.getElementsByTagName("id").item(0).getTextContent();
-                    String tag_name = eElement.getElementsByTagName("name").item(0).getTextContent();
-
-                    WS.HttpResponse resTags = WS.url(yourURL + "people.xml?tag_id=" + tag_id + "").authenticate(token, password, WS.Scheme.BASIC).get();
-                    contentAllTags = resTags.getString();
-
-                    FileWriter fileWrittertag = new FileWriter("myinputTag.txt");
-                    BufferedWriter bufferWritterTags = new BufferedWriter(fileWrittertag);
-                    bufferWritterTags.write(contentAllTags);
-                    bufferWritterTags.close();
-
-                    File inputFileTag = new File("myinputTag.txt");
-                    DocumentBuilderFactory dbFactoryTag = DocumentBuilderFactory.newInstance();
-                    dBuilder = dbFactoryTag.newDocumentBuilder();
-                    Document docTag = dBuilder.parse(inputFileTag);
-                    doc.getDocumentElement().normalize();
-
-                    if (eElement.getElementsByTagName("name").item(0).getTextContent().equals(tagName)) {
-                        String tagsExpression = "/people/person";
-                        NodeList nodeTags = (NodeList) xPath.compile(tagsExpression).evaluate(docTag, XPathConstants.NODESET);
-                        for (int b = 0; b < nodeTags.getLength(); b++) {
-                            Node nTags = nodeTags.item(b);
-                            System.out.println("\nCurrent Element :" + nTags.getNodeName());
-                            if (nTags.getNodeType() == Node.ELEMENT_NODE) {
-                                Element eElementTags = (Element) nTags;
-                                System.out.println("First Name : " + eElementTags.getElementsByTagName("first-name").item(0).getTextContent());
-                                System.out.println("Last Name : " + eElementTags.getElementsByTagName("last-name").item(0).getTextContent());
-                                System.out.println("Title : " + eElementTags.getElementsByTagName("title").item(0).getTextContent());
-                                System.out.println("Company Name : " + eElementTags.getElementsByTagName("company-name").item(0).getTextContent());
-                                System.out.println("tagsname : " + eElement.getElementsByTagName("name").item(0).getTextContent());
-
-
-                                Contact contact = new Contact();
-                                contact.userId = Long.parseLong(eElement.getElementsByTagName("id").item(0).getTextContent());
-                                contact.firstName =eElementTags.getElementsByTagName("first-name").item(0).getTextContent();
-                                contact.lastName = eElementTags.getElementsByTagName("last-name").item(0).getTextContent();
-                                contact.title = eElementTags.getElementsByTagName("title").item(0).getTextContent();
-                                contact.companyName = eElementTags.getElementsByTagName("company-name").item(0).getTextContent();
-                                contact.tags = eElement.getElementsByTagName("name").item(0).getTextContent();
-                                contacts.add(contact);
-                                contact.save();
-
-                            }
-                        }
-                        render(contacts, password, token, yourURL);
-                    }
-                }
             }
         }
+        render(contacts);
     }
 
-    public static void getData(String yourURL, String token, String password){
-        List<Contact> getAll = Contact.findAll();
-
-        render(getAll ,password, token, yourURL);
-    }
-
-    public static void addFilter(String yourURL, String token, String password, String tagName) throws IOException, XPathExpressionException, SAXException, ParserConfigurationException {
-        WS.HttpResponse res = WS.url(yourURL + "people.xml").authenticate(token, password, WS.Scheme.BASIC).get();
-        String contentAll = res.getString();
-
-        FileWriter fileWritter = new FileWriter("allTag.txt");
-        BufferedWriter bufferWritter = new BufferedWriter(fileWritter);
-        bufferWritter.write(contentAll);
-        bufferWritter.close();
-
-        String contentAllTags = null;
-
-        File inputFile = new File("allTag.txt");
-        DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
-        DocumentBuilder dBuilder;
-        dBuilder = dbFactory.newDocumentBuilder();
-        Document doc = dBuilder.parse(inputFile);
-        doc.getDocumentElement().normalize();
-
+    public static void searchContact(String endpoint, String token, String password, String tagID, String tagname, String tagName) throws XPathExpressionException {
+        if(request.cookies.containsKey("endpoint")){
+            if(request.cookies.get("endpoint").value.isEmpty()==false)
+                endpoint = request.cookies.get("endpoint").value;
+        }
+        if(request.cookies.containsKey("token")){
+            if(request.cookies.get("token").value.isEmpty()==false)
+                token = request.cookies.get("token").value;
+        }
+        if(request.cookies.containsKey("password")){
+            if(request.cookies.get("password").value.isEmpty()==false)
+                password = request.cookies.get("password").value;
+        }
+        String tag_id = null;
+        WS.HttpResponse res = WS.url( endpoint + "people.xml").authenticate(token, password, WS.Scheme.BASIC).get();
+        Document doc  = res.getXml();
         XPath xPath = XPathFactory.newInstance().newXPath();
-
         String expression = "/people/person/tags/tag";
         NodeList nodeList = (NodeList) xPath.compile(expression).evaluate(doc, XPathConstants.NODESET);
 
-        List<Contact> contacts = new ArrayList<>();
         for (int i = 0; i < nodeList.getLength(); i++) {
             Node nNode = nodeList.item(i);
-            System.out.println("\nCurrent Element :" + nNode.getNodeName());
             if (nNode.getNodeType() == Node.ELEMENT_NODE) {
                 Element eElement = (Element) nNode;
 
-                System.out.println("id : " + eElement.getElementsByTagName("id").item(0).getTextContent());
-                System.out.println("tagsname : " + eElement.getElementsByTagName("name").item(0).getTextContent());
-
-
-                if (eElement.getElementsByTagName("name").item(0).getTextContent().equals(tagName)) {
-                    String tag_id = eElement.getElementsByTagName("id").item(0).getTextContent();
-                    String tag_name = eElement.getElementsByTagName("name").item(0).getTextContent();
-
-                    WS.HttpResponse resTags = WS.url(yourURL + "people.xml?tag_id=" + tag_id + "").authenticate(token, password, WS.Scheme.BASIC).get();
-                    contentAllTags = resTags.getString();
-
-                    FileWriter fileWrittertag = new FileWriter("allTagInput.txt");
-                    BufferedWriter bufferWritterTags = new BufferedWriter(fileWrittertag);
-                    bufferWritterTags.write(contentAllTags);
-                    bufferWritterTags.close();
-
-                    File inputFileTag = new File("allTagInput.txt");
-                    DocumentBuilderFactory dbFactoryTag = DocumentBuilderFactory.newInstance();
-                    dBuilder = dbFactoryTag.newDocumentBuilder();
-                    Document docTag = dBuilder.parse(inputFileTag);
-                    doc.getDocumentElement().normalize();
-
-                    if (eElement.getElementsByTagName("name").item(0).getTextContent().equals(tagName)) {
-                        String tagsExpression = "/people/person";
-                        NodeList nodeTags = (NodeList) xPath.compile(tagsExpression).evaluate(docTag, XPathConstants.NODESET);
-                        for (int b = 0; b < nodeTags.getLength(); b++) {
-                            Node nTags = nodeTags.item(b);
-                            System.out.println("\nCurrent Element :" + nTags.getNodeName());
-                            if (nTags.getNodeType() == Node.ELEMENT_NODE) {
-                                Element eElementTags = (Element) nTags;
-                                System.out.println("First Name : " + eElementTags.getElementsByTagName("first-name").item(0).getTextContent());
-                                System.out.println("Last Name : " + eElementTags.getElementsByTagName("last-name").item(0).getTextContent());
-                                System.out.println("Title : " + eElementTags.getElementsByTagName("title").item(0).getTextContent());
-                                System.out.println("Company Name : " + eElementTags.getElementsByTagName("company-name").item(0).getTextContent());
-                                System.out.println("tagsname : " + eElement.getElementsByTagName("name").item(0).getTextContent());
-
-
-                                Contact contact = new Contact();
-                                contact.userId = Long.parseLong(eElement.getElementsByTagName("id").item(0).getTextContent());
-                                contact.firstName =eElementTags.getElementsByTagName("first-name").item(0).getTextContent();
-                                contact.lastName = eElementTags.getElementsByTagName("last-name").item(0).getTextContent();
-                                contact.title = eElementTags.getElementsByTagName("title").item(0).getTextContent();
-                                contact.companyName = eElementTags.getElementsByTagName("company-name").item(0).getTextContent();
-                                contact.tags = eElement.getElementsByTagName("name").item(0).getTextContent();
-                                contacts.add(contact);
-//                              contact.save();
-
-                            }
-                        }
-                        render(contacts, password, token, yourURL);
-                    }
+                if (eElement.getElementsByTagName("name").item(0).getTextContent().equals(tagname)) {
+                    tag_id = eElement.getElementsByTagName("id").item(0).getTextContent();
+                    tagname = eElement.getElementsByTagName("name").item(0).getTextContent();
+                    tagName = eElement.getElementsByTagName("name").item(0).getTextContent();
                 }
+            }
+
+        }
+
+        tagname = tag_id;
+        WS.HttpResponse resTag = WS.url(endpoint + "people.xml?tag_id=" + tag_id + "").authenticate(token, password, WS.Scheme.BASIC).get();
+        Document docs  = resTag.getXml();
+
+        String expressionTag = "/people/person";
+        NodeList nodeListTag = (NodeList) xPath.compile(expressionTag).evaluate(docs, XPathConstants.NODESET);
+        List<Contact> contacts = new ArrayList<>();
+        List<Tag> tags = new ArrayList<>();
+        for (int i = 0; i < nodeListTag.getLength(); i++) {
+            Node nNode = nodeListTag.item(i);
+            if (nNode.getNodeType() == Node.ELEMENT_NODE) {
+                Element eElement = (Element) nNode;
+                Contact contact = new Contact();
+                contact.userID = eElement.getElementsByTagName("id").item(0).getTextContent();
+                contact.firstName =eElement.getElementsByTagName("first-name").item(0).getTextContent();
+                contact.lastName = eElement.getElementsByTagName("last-name").item(0).getTextContent();
+                contact.title = eElement.getElementsByTagName("title").item(0).getTextContent();
+                contact.companyName = eElement.getElementsByTagName("company-name").item(0).getTextContent();
+                contacts.add(contact);
+
+                boolean checkContactinDB = Contact.checkContactinDB(contact.userID);
+                if (checkContactinDB == false) {
+                    contact.save();
+                }
+
+                Tag tag = new Tag();
+                tag.tagId = tag_id;
+                tag.tagName = tagName;
+                tags.add(tag);
+
+                boolean exists = Tag.checkTaginDB(tagname);
+                if (exists == false ) {
+                    tag.save();
+                }
+
             }
         }
 
-
-
+        render(contacts, tags);
     }
+
+    public static void getContactDB() {
+        List<Contact> contacts = Contact.findAll();
+        render(contacts);
+    }
+
+    public static void filterContact(String filter) {
+        List<Contact> contacts = Contact.find("title", filter).fetch();
+
+        render(contacts);
+    }
+
+
+
 }

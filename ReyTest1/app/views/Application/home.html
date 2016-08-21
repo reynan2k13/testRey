@@ -1,0 +1,19 @@
+#{extends 'main.html' /}
+#{set title:'Home' /}
+<script xmlns="http://www.w3.org/1999/html">
+
+</script>
+<div>
+    <center>
+        <p><a href="/getAllContact" class="btn btn-default">Get All Contacts</a></p>
+        #{form @Application.searchContact(), method:'POST', enctype:'multipart/form-data'}
+        <p><input type="text" name="tagname" id="tagname" style="width:300px;"/>
+        <input type="submit" value="Search Tag" id="submit"></p>
+        #{/form}
+        <p><a href="/contactDB" class="btn btn-default">Get Contacts in DataBase</a></p>
+        #{form @Application.filterContact(), method:'POST', enctype:'multipart/form-data'}
+        <p><input type="text" name="filter" style="width:300px;"/>
+            <input type="submit" value="Filter" id="submit"></p>
+        #{/form}
+    </center>
+</div>

@@ -1,21 +1,28 @@
 #{extends 'main.html' /}
-#{set title:'Home' /}
+#{set title:'Login' /}
 <script xmlns="http://www.w3.org/1999/html">
-$(document).ready(function(){
-    $("#submit").click(function(){
-        console.log("submit form");
-    });
-});
 
 </script>
 <div>
     <center>
-    #{form @Application.getConnection(), method:'POST', enctype:'multipart/form-data'}
-        <p><input type="text" name="yourURL" value="https://kinpoelectronicsinc.highrisehq.com/" style="width:300px;" required/> login url</p>
-        <p><input type="text" name="token" value="b0bd437dc2765fea5e705cb6b8b32723" style="width:300px;" required/>Your token</p>
-        <p><input type="text" name="password" value="reynantest1" style="width:300px;" required/>password</p>
-        <p><input type="text" name="tagName" value="developer" style="width:300px;" required/> FindTag</p>
-        <input class="btn btn-hg btn-success btn-news-save" type="submit" value="SUBMIT" id="submit">
+        #{form @Application.home(), method:'POST', enctype:'multipart/form-data'}
+        <br>
+        <br>
+        <div class="container" style="border:2px solid gray;">
+            <br>
+            <div class="col-lg-5 text-right">
+                <p>Endpoint</p>
+                <p>Token</p>
+                <p>Password</p>
+            </div>
+            <div class="col-lg-7 text-left">
+                <p><input type="text" name="endpoint" value="https://kinpoelectronicsinc.highrisehq.com/" style="width:300px;" required/></p>
+                <p><input type="text" name="token" value="b0bd437dc2765fea5e705cb6b8b32723" style="width:300px;" required/></p>
+                <p><input type="text" name="password" value="reynantest1" style="width:300px;" required/></p>
+                <input class="btn btn-hg btn-success" type="submit" value="submit">
+                <br>
+            </div>
+        </div>
         #{/form}
     </center>
 

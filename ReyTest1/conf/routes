@@ -3,7 +3,18 @@
 # ~~~~
 
 # Home page
-GET     /                                       Application.index
+GET    /                                        Application.index
+GET    /home                                    Application.home
+GET    /getAllContact                           Application.getAllContact
+GET    /search                                  Application.searchContact
+GET    /contactDB                               Application.getContactDB
+GET    /filterContact                           Application.filterContact
+
+
+POST    /home                                   Application.home
+POST    /search                                 Application.searchContact
+POST    /contactDB                              Application.getContactDB
+POST    /filterContact                           Application.filterContact
 
 # Ignore favicon requests
 GET     /favicon.ico                            404

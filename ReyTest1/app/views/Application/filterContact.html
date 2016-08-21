@@ -1,0 +1,65 @@
+#{extends 'main.html' /}
+#{set title:'Home' /}
+<script xmlns="http://www.w3.org/1999/html">
+
+
+</script>
+<div>
+    <center>
+        <p><a href="/getAllContact" class="btn btn-default">Get All Contacts</a></p>
+        #{form @Application.searchContact(), method:'POST', enctype:'multipart/form-data'}
+        <p><input type="text" name="tagname" id="tagname" style="width:300px;"/>
+            <input type="submit" value="Search Tag" id="submit"></p>
+        #{/form}
+        <p><a href="/contactDB" class="btn btn-default">Get Contacts in DataBase</a></p>
+        #{form @Application.filterContact(), method:'POST', enctype:'multipart/form-data'}
+        <p><input type="text" name="filter" style="width:300px;"/>
+            <input type="submit" value="Filter" id="submit"></p>
+        #{/form}
+    </center>
+
+    <div class="text-center">
+        <div class="col-lg-3 col-md-3" >
+            <h3>User ID</h3>
+        </div>
+        <div class="col-lg-2 col-md-2" >
+            <h3>First Name</h3>
+        </div>
+        <div class="col-lg-2 col-md-2" >
+            <h3>Last Name</h3>
+        </div>
+        <div class="col-lg-2 col-md-2" >
+            <h3>Title</h3>
+        </div>
+        <div class="col-lg-3 col-md-3" >
+            <h3>Company</h3>
+        </div>
+    </div>
+    <div class="text-center">
+        #{list contacts, as: 'contacts'}
+        <div class="col-lg-3 col-md-3">
+            <p>${contacts?.userID}</p>
+        </div>
+        <div class="col-lg-2 col-md-2" >
+            <p>${contacts?.firstName}</p>
+        </div>
+        <div class="col-lg-2 col-md-2">
+            <p>${contacts?.lastName}</p>
+        </div>
+        <div class="col-lg-2 col-md-2">
+            <p>${contacts?.title}</p>
+        </div>
+        <div class="col-lg-3 col-md-3">
+            <p>${contacts?.companyName}</p>
+        </div>
+        #{/list}
+
+        #{list tags, as: 'tags'}
+        <div class="col-lg-2 col-md-2">
+            <div class="col-lg-2 col-md-2">
+                <p>${tags?.tagName}</p>
+            </div>
+        </div>
+        #{/list}
+    </div>
+</div>

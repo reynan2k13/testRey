@@ -1,9 +1,0 @@
-db/
-tmp/
-modules/crud
-modules/secure
-
-*.iml
-*.ipr
-*.iws
-*.scssc
